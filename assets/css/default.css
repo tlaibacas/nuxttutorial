@@ -1,0 +1,44 @@
+.layout-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+  padding: 2rem;
+}
+
+nav {
+  background-color: #333;
+  color: yellow;
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+}
+
+nav a {
+  color: yellow;
+  text-decoration: none;
+  font-size: 1.5rem;
+}
+
+nav a:hover {
+  color: orange;
+}
+
+nav a:active {
+  color: red;
+}
+
+nav a {
+  margin-right: 1rem;
+}
+footer {
+  background-color: #333;
+  color: yellow;
+  padding: 1rem;
+  text-align: center;
+}
