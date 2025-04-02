@@ -1,0 +1,31 @@
+nav {
+  background-color: black;
+  color: white;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+nav a {
+  color: yellow;
+  text-decoration: none;
+  margin-right: 15px;
+}
+
+nav a:hover {
+  color: orange;
+}
+
+nav a:active {
+  color: red;
+}
+nav ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+}
+
+nav li {
+  margin-right: 15px;
+}
