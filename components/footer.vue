@@ -1,5 +1,5 @@
 <style>
-@import "../assets/css/footer.css";
+@import "../assets/styles/footer.css";
 </style>
 
 <template>
