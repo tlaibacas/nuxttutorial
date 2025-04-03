@@ -2,19 +2,31 @@ import { defineNuxtConfig } from "nuxt/config";
 import vuetify from "vite-plugin-vuetify";
 
 export default defineNuxtConfig({
-  compatibilityDate: "2024-11-01",
   devtools: { enabled: true },
-  modules: [],
+
+  css: [
+    "vuetify/lib/styles/main.sass",
+    "@mdi/font/css/materialdesignicons.min.css",
+  ],
+
+  build: {
+    transpile: ["vuetify"],
+  },
+
   vite: {
+    plugins: [
+      vuetify({
+        autoImport: true,
+        styles: { configFile: "./assets/scss/variables.scss" },
+      }),
+    ],
     ssr: {
       noExternal: ["vuetify"],
     },
-    plugins: [
-      vuetify({
-        styles: {
-          configFile: "path/to/your/vuetify/styles.scss",
-        },
-      }),
-    ],
+    define: {
+      "process.env.DEBUG": "false",
+    },
   },
+
+  compatibilityDate: "2025-04-03",
 });
