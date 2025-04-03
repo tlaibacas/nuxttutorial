@@ -1,5 +1,5 @@
 <style>
-@import "../assets/css/contact.css";
+@import "../assets/styles/contact.css";
 </style>
 
 <script setup>

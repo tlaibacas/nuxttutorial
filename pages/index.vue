@@ -1,5 +1,5 @@
 <style>
-@import "../assets/css/index.css";
+@import "../assets/styles/index.css";
 </style>
 
 <template>
