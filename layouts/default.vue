@@ -1,19 +1,27 @@
-<style>
-@import "../assets/styles/default.css";
-</style>
-
 <template>
-  <div class="layout-container">
-    <header>
+  <VLayout>
+    <VAppBar color="primary">
       <Header />
-    </header>
+    </VAppBar>
 
-    <main class="main-content">
-      <slot />
-    </main>
+    <VMain>
+      <VContainer>
+        <NuxtPage />
+      </VContainer>
+    </VMain>
 
-    <footer class="site-footer">
+    <VFooter app color="secondary">
       <Footer />
-    </footer>
-  </div>
+    </VFooter>
+  </VLayout>
 </template>
+
+<script setup>
+import {
+  VLayout,
+  VAppBar,
+  VMain,
+  VContainer,
+  VFooter,
+} from "vuetify/components";
+</script>

@@ -1,5 +1,9 @@
 <template>
-  <div>
-    <NuxtLayout> </NuxtLayout>
-  </div>
+  <VApp>
+    <NuxtLayout />
+  </VApp>
 </template>
+
+<script setup>
+import { VApp } from "vuetify/components/VApp";
+</script>
