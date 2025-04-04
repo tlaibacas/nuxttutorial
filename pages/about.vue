@@ -8,19 +8,16 @@
           <v-card-text class="text-body-1">
             Welcome to the About page! Learn more about our mission and values.
           </v-card-text>
-
+          <AddressMap />
           <v-card-actions class="justify-center mt-4">
-            <v-btn
-              color="primary"
-              variant="flat"
-              prepend-icon="mdi-information"
-              to="/"
-            >
-              Back to Home
-            </v-btn>
+            <v-btn color="primary" variant="flat" to="/"> Back to Home </v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
     </v-row>
   </v-container>
 </template>
+
+<script setup>
+import AddressMap from "~/components/AddressMap.vue";
+</script>
