@@ -1,27 +1,21 @@
 <template>
-  <VLayout>
-    <VAppBar color="primary">
+  <VApp>
+    <VAppBar density="comfortable">
       <Header />
     </VAppBar>
 
     <VMain>
-      <VContainer>
+      <VContainer class="py-8">
         <NuxtPage />
       </VContainer>
     </VMain>
 
-    <VFooter app color="secondary">
+    <VFooter class="mt-8">
       <Footer />
     </VFooter>
-  </VLayout>
+  </VApp>
 </template>
 
 <script setup>
-import {
-  VLayout,
-  VAppBar,
-  VMain,
-  VContainer,
-  VFooter,
-} from "vuetify/components";
+import { VApp, VAppBar, VMain, VContainer, VFooter } from "vuetify/components";
 </script>

@@ -1,11 +1,26 @@
 <template>
-  <v-app>
-    <v-app-bar app class="header-bar">
-      <v-toolbar-title>My Nuxt App</v-toolbar-title>
+  <v-app-bar-title class="font-weight-bold text-h5">
+    My Nuxt App
+  </v-app-bar-title>
 
-      <v-btn text to="/">Home</v-btn>
-      <v-btn text to="/about">About</v-btn>
-      <v-btn text to="/contact">Contact</v-btn>
-    </v-app-bar>
-  </v-app>
+  <v-spacer />
+
+  <v-btn
+    v-for="(link, index) in links"
+    :key="index"
+    :to="link.to"
+    variant="text"
+    color="on-primary"
+    class="mx-1"
+  >
+    {{ link.text }}
+  </v-btn>
 </template>
+
+<script setup lang="ts">
+const links = [
+  { text: "Home", to: "/" },
+  { text: "About", to: "/about" },
+  { text: "Contact", to: "/contact" },
+];
+</script>
