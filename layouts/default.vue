@@ -10,9 +10,7 @@
       </VContainer>
     </VMain>
 
-    <VFooter class="mt-8">
-      <Footer />
-    </VFooter>
+    <Footer />
   </VApp>
 </template>
 
