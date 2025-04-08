@@ -13,5 +13,6 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     hubspotAccessToken: process.env.NUXT_HUBSPOT_ACCESS_TOKEN,
+    hubspotClientId: process.env.NUXT_HUBSPOT_ACCESS_KEY,
   },
 });
