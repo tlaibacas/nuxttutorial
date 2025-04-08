@@ -13,7 +13,3 @@
     <Footer />
   </VApp>
 </template>
-
-<script setup>
-import { VApp, VAppBar, VMain, VContainer, VFooter } from "vuetify/components";
-</script>

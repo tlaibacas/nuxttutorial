@@ -22,5 +22,7 @@ const links = [
   { text: "Home", to: "/" },
   { text: "About", to: "/about" },
   { text: "Contact", to: "/contact" },
+  { text: "Caregivers", to: "/caregivers" },
+  { text: "Nurses", to: "/nurses" },
 ];
 </script>

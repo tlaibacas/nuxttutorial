@@ -11,4 +11,7 @@ export default defineNuxtConfig({
       "process.env.DEBUG": "false",
     },
   },
+  runtimeConfig: {
+    hubspotAccessToken: process.env.NUXT_HUBSPOT_ACCESS_TOKEN,
+  },
 });
