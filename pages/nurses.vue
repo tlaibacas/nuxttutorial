@@ -90,7 +90,6 @@ export default defineComponent({
     },
   },
   mounted() {
-    this.fetchCaregivers();
     window.addEventListener("scroll", this.handleScroll);
   },
   beforeUnmount() {
