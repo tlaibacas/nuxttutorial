@@ -22,8 +22,10 @@
           <v-list-item-subtitle v-if="caregiver.properties.email">
             {{ caregiver.properties.email }}
           </v-list-item-subtitle>
-          <v-list-item-subtitle v-if="caregiver.properties.prescriber_status">
-            Status: {{ caregiver.properties.prescriber_status }}
+          <v-list-item-subtitle
+            v-if="caregiver.properties.statut_du_prescripteur"
+          >
+            Statut: {{ caregiver.properties.statut_du_prescripteur }}
           </v-list-item-subtitle>
         </v-list-item>
       </v-list>
@@ -60,8 +62,8 @@ type HubspotContact = {
     lastname: string;
     email: string | null;
     phone: string | null;
-    contact_type?: string | null;
-    prescriber_status: string | null;
+    type_de_contact?: string | null;
+    statut_du_prescripteur: string | null;
   };
 };
 
@@ -99,13 +101,14 @@ export default defineComponent({
       this.loading = true;
       try {
         const data = await $fetch<{ contacts: HubspotContact[] }>(
-          "/api/hubspot/contacts?type=nurse"
+          "/api/hubspot/contacts?type=infirmier"
         );
         this.caregivers = data.contacts.filter(
-          (c) => c.properties.prescriber_status === "OK for recommendation"
+          (c) =>
+            c.properties.statut_du_prescripteur === "OK pour recommandation"
         );
       } catch (error) {
-        console.error("Error loading nurses:", error);
+        console.error("Error loading infirmières:", error);
       } finally {
         this.loading = false;
       }
@@ -123,11 +126,11 @@ export default defineComponent({
       window.scrollTo({ top: 0, behavior: "smooth" });
     },
     formatType(type?: string | null) {
-      if (!type) return "Unknown";
+      if (!type) return "Inconnu";
       return type
         .split(" ")
         .map((word) =>
-          ["of", "the", "a", "an"].includes(word.toLowerCase())
+          ["de", "du", "la", "le"].includes(word.toLowerCase())
             ? word.toLowerCase()
             : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
         )
