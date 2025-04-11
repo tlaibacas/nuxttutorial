@@ -22,6 +22,9 @@
           <v-list-item-subtitle v-if="caregiver.properties.email">
             {{ caregiver.properties.email }}
           </v-list-item-subtitle>
+          <v-list-item-subtitle v-if="caregiver.properties.tiering_auxiliaire">
+            Tiering: {{ caregiver.properties.tiering_auxiliaire }}
+          </v-list-item-subtitle>
         </v-list-item>
       </v-list>
 
@@ -36,7 +39,7 @@
 
         <v-btn
           color="primary"
-          :loading="pending"
+          :loading="loading"
           @click="loadReadyCaregivers"
           class="mt-4"
         >
@@ -47,70 +50,89 @@
   </v-container>
 </template>
 
-<script setup lang="ts">
-interface Caregiver {
+<script lang="ts">
+import { defineComponent } from "vue";
+
+type HubspotContact = {
   id: string;
   properties: {
     firstname: string;
     lastname: string;
-    email?: string;
-    job_title?: string;
-    recommendation_ready?: string;
+    email: string | null;
+    phone: string | null;
+    type_de_contact?: string | null;
+    tiering_auxiliaire: string | null;
   };
-}
+};
 
-const currentPage = ref(1);
-const itemsPerPage = ref(10);
-const totalPages = ref(0);
-const totalCaregivers = ref(0);
+export default defineComponent({
+  data() {
+    return {
+      caregivers: [] as HubspotContact[],
+      currentPage: 1,
+      itemsPerPage: 10,
+      loading: false,
+      showScrollToTop: false,
+    };
+  },
+  computed: {
+    totalCaregivers(): number {
+      return this.caregivers.length;
+    },
+    totalPages(): number {
+      return Math.ceil(this.caregivers.length / this.itemsPerPage);
+    },
+    paginatedCaregivers(): HubspotContact[] {
+      const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+      return this.caregivers.slice(startIndex, startIndex + this.itemsPerPage);
+    },
+  },
+  mounted() {
+    window.addEventListener("scroll", this.handleScroll);
+  },
+  beforeUnmount() {
+    window.removeEventListener("scroll", this.handleScroll);
+  },
+  methods: {
+    async fetchCaregivers() {
+      this.loading = true;
+      try {
+        const data = await $fetch<{ contacts: HubspotContact[] }>(
+          "/api/hubspot/contacts?type=auxiliaire de vie"
+        );
 
-const caregivers = ref<Caregiver[]>([]);
-const pending = ref(false);
-
-const loadReadyCaregivers = async () => {
-  pending.value = true;
-  try {
-    let allCaregivers: Caregiver[] = [];
-    let after: string | undefined;
-
-    do {
-      const { data } = await useFetch<{
-        data: Caregiver[];
-        paging?: { next?: { after: string } };
-      }>("/api/hubspot/contacts", {
-        query: {
-          properties: "firstname,lastname,email,recommendation_ready",
-          recommendation_ready: "true",
-          limit: 100,
-          after,
-        },
-      });
-
-      if (data.value?.data) {
-        allCaregivers = [...allCaregivers, ...data.value.data];
-        after = data.value.paging?.next?.after;
-      } else {
-        after = undefined;
+        this.caregivers = data.contacts.filter(
+          (c) => c.properties.tiering_auxiliaire === "T1"
+        );
+      } catch (error) {
+        console.error("Error loading caregivers:", error);
+      } finally {
+        this.loading = false;
       }
-    } while (after);
-
-    caregivers.value = allCaregivers;
-    totalCaregivers.value = caregivers.value.length;
-    totalPages.value = Math.ceil(totalCaregivers.value / itemsPerPage.value);
-  } catch (error) {
-    console.error("Error loading caregivers:", error);
-  } finally {
-    pending.value = false;
-  }
-};
-
-const loadPage = (newPage: number) => {
-  currentPage.value = newPage;
-};
-
-const paginatedCaregivers = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage.value;
-  const end = start + itemsPerPage.value;
-  return caregivers.value.slice(start, end);
+    },
+    loadPage(page: number) {
+      this.currentPage = page;
+    },
+    loadReadyCaregivers() {
+      this.fetchCaregivers();
+    },
+    handleScroll() {
+      this.showScrollToTop = window.scrollY > 300;
+    },
+    scrollToTop() {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    },
+    formatType(type?: string | null) {
+      if (!type) return "Unknown";
+      return type
+        .split(" ")
+        .map((word) =>
+          ["de", "du", "la", "le"].includes(word.toLowerCase())
+            ? word.toLowerCase()
+            : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        )
+        .join(" ");
+    },
+  },
 });
 </script>

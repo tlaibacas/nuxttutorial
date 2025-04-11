@@ -4,19 +4,26 @@
 
     <v-card class="mb-4">
       <v-card-title class="text-h6">
-        List of nurses
+        List of Nurses
         <v-chip class="ml-2" color="success" small>
-          {{ totalNurses }}
+          {{ totalCaregivers }}
         </v-chip>
       </v-card-title>
 
-      <v-list v-if="paginatedNurses.length">
-        <v-list-item v-for="nurse in paginatedNurses" :key="nurse.id">
+      <v-list v-if="paginatedCaregivers.length">
+        <v-list-item
+          v-for="caregiver in paginatedCaregivers"
+          :key="caregiver.id"
+        >
           <v-list-item-title>
-            {{ nurse.properties.firstname }} {{ nurse.properties.lastname }}
+            {{ caregiver.properties.firstname }}
+            {{ caregiver.properties.lastname }}
           </v-list-item-title>
-          <v-list-item-subtitle v-if="nurse.properties.email">
-            {{ nurse.properties.email }}
+          <v-list-item-subtitle v-if="caregiver.properties.email">
+            {{ caregiver.properties.email }}
+          </v-list-item-subtitle>
+          <v-list-item-subtitle v-if="caregiver.properties.prescriber_status">
+            Status: {{ caregiver.properties.prescriber_status }}
           </v-list-item-subtitle>
         </v-list-item>
       </v-list>
@@ -32,84 +39,100 @@
 
         <v-btn
           color="primary"
-          :loading="pending"
-          @click="loadReadyNurses"
+          :loading="loading"
+          @click="loadReadyCaregivers"
           class="mt-4"
         >
-          {{ nurses.length ? "Refresh List" : "Load nurse list" }}
+          {{ caregivers.length ? "Update list" : "Load list of nurses" }}
         </v-btn>
       </v-card-actions>
     </v-card>
   </v-container>
 </template>
 
-<script setup lang="ts">
-interface Nurse {
+<script lang="ts">
+import { defineComponent } from "vue";
+
+type HubspotContact = {
   id: string;
   properties: {
     firstname: string;
     lastname: string;
-    email?: string;
-    job_title?: string;
-    recommendation_ready?: string;
+    email: string | null;
+    phone: string | null;
+    contact_type?: string | null;
+    prescriber_status: string | null;
   };
-}
+};
 
-const currentPage = ref(1);
-const itemsPerPage = ref(10);
-const totalPages = ref(0);
-const totalNurses = ref(0);
-
-const nurses = ref<Nurse[]>([]);
-const pending = ref(false);
-
-const loadReadyNurses = async () => {
-  pending.value = true;
-  try {
-    let allNurses: Nurse[] = [];
-    let after: string | undefined;
-
-    do {
-      const { data } = await useFetch<{
-        data: Nurse[];
-        paging?: { next?: { after: string } };
-      }>("/api/hubspot/contacts", {
-        query: {
-          properties: "firstname,lastname,email,recommendation_ready",
-          recommendation_ready: "true",
-          limit: 100,
-          after,
-        },
-      });
-
-      if (data.value?.data) {
-        allNurses = [...allNurses, ...data.value.data];
-        after = data.value.paging?.next?.after;
-      } else {
-        after = undefined;
+export default defineComponent({
+  data() {
+    return {
+      caregivers: [] as HubspotContact[],
+      currentPage: 1,
+      itemsPerPage: 10,
+      loading: false,
+      showScrollToTop: false,
+    };
+  },
+  computed: {
+    totalCaregivers(): number {
+      return this.caregivers.length;
+    },
+    totalPages(): number {
+      return Math.ceil(this.caregivers.length / this.itemsPerPage);
+    },
+    paginatedCaregivers(): HubspotContact[] {
+      const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+      return this.caregivers.slice(startIndex, startIndex + this.itemsPerPage);
+    },
+  },
+  mounted() {
+    this.fetchCaregivers();
+    window.addEventListener("scroll", this.handleScroll);
+  },
+  beforeUnmount() {
+    window.removeEventListener("scroll", this.handleScroll);
+  },
+  methods: {
+    async fetchCaregivers() {
+      this.loading = true;
+      try {
+        const data = await $fetch<{ contacts: HubspotContact[] }>(
+          "/api/hubspot/contacts?type=nurse"
+        );
+        this.caregivers = data.contacts.filter(
+          (c) => c.properties.prescriber_status === "OK for recommendation"
+        );
+      } catch (error) {
+        console.error("Error loading nurses:", error);
+      } finally {
+        this.loading = false;
       }
-    } while (after);
-
-    nurses.value = allNurses;
-    totalNurses.value = nurses.value.length;
-    totalPages.value = Math.ceil(totalNurses.value / itemsPerPage.value);
-  } catch (error) {
-    console.error("Error loading nurses:", error);
-  } finally {
-    pending.value = false;
-  }
-};
-
-const loadPage = (newPage: number) => {
-  currentPage.value = newPage;
-};
-
-const paginatedNurses = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage.value;
-  const end = start + itemsPerPage.value;
-  return nurses.value.slice(start, end);
-});
-watch(nurses, (newNurses) => {
-  console.log("Nurses JSON:", JSON.stringify(newNurses, null, 2));
+    },
+    loadPage(page: number) {
+      this.currentPage = page;
+    },
+    loadReadyCaregivers() {
+      this.fetchCaregivers();
+    },
+    handleScroll() {
+      this.showScrollToTop = window.scrollY > 300;
+    },
+    scrollToTop() {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    },
+    formatType(type?: string | null) {
+      if (!type) return "Unknown";
+      return type
+        .split(" ")
+        .map((word) =>
+          ["of", "the", "a", "an"].includes(word.toLowerCase())
+            ? word.toLowerCase()
+            : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        )
+        .join(" ");
+    },
+  },
 });
 </script>
