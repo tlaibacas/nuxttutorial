@@ -1,0 +1,48 @@
+version: '3.7'
+
+services:
+  directus:
+    image: directus/directus
+    container_name: directus
+    environment:
+      - DB_CLIENT=pg
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - SECRET=${SECRET}
+      - PUBLIC_URL=${PUBLIC_URL}
+      - CORS_ORIGIN=${CORS_ORIGIN}
+    ports:
+      - "8055:8055"
+    volumes:
+      - directus_data:/var/lib/postgresql/data
+    depends_on:
+      - db
+    networks:
+      - directus-net
+
+  db:
+    image: postgres:13
+    container_name: directus-db
+    environment:
+      - POSTGRES_DB=${DB_DATABASE}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    networks:
+      - directus-net
+    volumes:
+      - directus-db-data:/var/lib/postgresql/data
+
+volumes:
+  directus_data:
+  directus-db-data:
+
+networks:
+  directus-net:
+    driver: bridge
