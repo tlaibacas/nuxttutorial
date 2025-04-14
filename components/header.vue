@@ -24,5 +24,7 @@ const links = [
   { text: "Contact", to: "/contact" },
   { text: "Caregivers", to: "/caregivers" },
   { text: "Nurses", to: "/nurses" },
+  { text: "Scrapper", to: "/scrapper" },
+
 ];
 </script>
