@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
     await browser.close();
 
     console.log('[Scraping] Done!');
-    return { quote };
+    return { title: quote };
   } catch (error) {
     console.error('[Scraping] Error during scraping:', error);
     return sendError(event, createError({

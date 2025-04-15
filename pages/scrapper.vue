@@ -8,7 +8,7 @@
             </v-card-title>
   
             <v-card-text class="text-body-1">
-              This page is a scraper for the website (under construction).
+              This page is a scraper for the website.
             </v-card-text>
   
             <v-btn
@@ -17,16 +17,16 @@
               class="mt-4"
               @click="startScraping"
             >
-              START SCRAPPING NOW!
+              Scrape Now
             </v-btn>
   
             <v-alert
               v-if="scrapingResult"
-              type="success"
+              color="secondary"
               class="mt-4"
               elevation="2"
             >
-              <strong>Scraping Successful:</strong> {{ scrapingResult }}
+              {{ scrapingResult }}
             </v-alert>
   
             <v-alert
